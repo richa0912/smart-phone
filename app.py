@@ -1,19 +1,23 @@
-from flask import Flask,url_for,redirect
+from flask import Flask,url_for,request
 from flaskext.mysql import MySQL
 app = Flask(__name__)
 mysql=MySQL(app)
-app = Flask(__name__)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'proj'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = 'ubuntu@52.66.171.201'
 mysql.init_app(app)
-mysql.connect().autocommit(True)
 token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
-
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook')
+count=0
+wel=[]
+@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['GET','POST'])
 def token():
-	return "welcome"
+	if request.method=='POST':
+		global count
+		count+=1			
+		return str(count)			
+	else:
+		return "welcome"
 
 @app.route('/')
 def index():
