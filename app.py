@@ -5,12 +5,13 @@ mysql=MySQL(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'proj'
-app.config['MYSQL_DATABASE_HOST'] = 'ubuntu@52.66.171.201'
+app.config['MYSQL_DATABASE_HOST'] = 'localhost'
 mysql.init_app(app)
+mysql.connect().autocommit(True)
 token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
 count=0
 wel=[]
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['GET','POST'])
+@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['post'])
 def token():
 	if request.method=='POST':
 		global count
