@@ -5,7 +5,7 @@ mysql=MySQL(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
 app.config['MYSQL_DATABASE_PASSWORD'] = 'root'
 app.config['MYSQL_DATABASE_DB'] = 'proj'
-app.config['MYSQL_DATABASE_HOST'] = 'localhost'
+app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
 mysql.init_app(app)
 mysql.connect().autocommit(True)
 token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
