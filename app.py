@@ -1,5 +1,6 @@
-from flask import Flask,url_for,request
+from flask import Flask,url_for,request,json,jsonify
 from flaskext.mysql import MySQL
+import requests
 app = Flask(__name__)
 mysql=MySQL(app)
 app.config['MYSQL_DATABASE_USER'] = 'root'
@@ -10,13 +11,13 @@ mysql.init_app(app)
 mysql.connect().autocommit(True)
 token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
 count=0
-wel=[]
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['post'])
+@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
 def token():
-	if request.method=='POST':
-		global count
-		count+=1			
-		return str(count)			
+	if requests.method=='POST':
+		content=requests.json
+		print content
+		r = requests.post('https://api.telegram.org/botYOUR_APP_TOKEN/sendMessage', data = {'chatid':'229720277', "message": "hello"})
+		return jsonify(content)	
 	else:
 		return "welcome"
 
@@ -41,7 +42,7 @@ def user(id):
 def add(insert):
 	db=mysql.connect()
 	cursor=db.cursor()
-	cursor.execute("""INSERT INTO user (qid,ques,ans,pty) VALUES (%s,%s,%s,%s)""",(2,insert,'yes',2))
+	cursor.execute("""INSERT INTO user (qid,ques,ans,pty) VALUES (%s,%s,%s,%s)""",(1,insert,'yes',2))
 	db.commit()
 	return "inserted"
 	cursor.close()	
