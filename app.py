@@ -13,13 +13,15 @@ token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
 count=0
 @app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
 def token():
-	if requests.method=='POST':
-		content=requests.json
-		print content
-		r = requests.post('https://api.telegram.org/botYOUR_APP_TOKEN/sendMessage', data = {'chatid':'229720277', "message": "hello"})
+		content=request.json
+		#parsed_json = json.load(content)
+		print content['message']['text']
+		#str12=parsed_json['ok']
+		chat_id='229720277'
+		str1='kkk'
+		r = requests.post('https://api.telegram.org/bot274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/sendMessage?chat_id='+chat_id+'&text='+str1, data = {'chatid':'229720277', 'message': 'please'})
+		#print(r)
 		return jsonify(content)	
-	else:
-		return "welcome"
 
 @app.route('/')
 def index():
