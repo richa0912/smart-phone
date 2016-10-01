@@ -17,9 +17,11 @@ def token():
 		#parsed_json = json.load(content)
 		fname=content['message']['chat']['first_name']
 		lname=content['message']['chat']['last_name']
+		test = content['message']['text']
 		chat_id=str(content['message']['chat']['id'])
-		str1="welcome "+fname+" "+lname
-		r = requests.post('https://api.telegram.org/bot274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/sendMessage?chat_id='+chat_id+'&text='+str1, data = {'chatid':'229720277', 'message': 'please'})
+		str1="welcome "+fname+" "+lname+ " you sent "+ test
+		print content
+		r = requests.post('https://api.telegram.org/bot289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/sendMessage?chat_id='+chat_id+'&text='+str1, data = {'chatid':'229720277', 'message': 'please'})
 		#print(r)
 		return jsonify(content)	
 
