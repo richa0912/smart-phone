@@ -11,7 +11,7 @@ mysql.init_app(app)
 mysql.connect().autocommit(True)
 token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
 count=0
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
+@app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 		content=request.json
 		#parsed_json = json.load(content)
