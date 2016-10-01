@@ -15,10 +15,10 @@ count=0
 def token():
 		content=request.json
 		#parsed_json = json.load(content)
-		print content['message']['text']
-		#str12=parsed_json['ok']
-		chat_id='229720277'
-		str1='kkk'
+		fname=content['message']['chat']['first_name']
+		lname=content['message']['chat']['last_name']
+		chat_id=str(content['message']['chat']['id'])
+		str1="welcome "+fname+" "+lname
 		r = requests.post('https://api.telegram.org/bot274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/sendMessage?chat_id='+chat_id+'&text='+str1, data = {'chatid':'229720277', 'message': 'please'})
 		#print(r)
 		return jsonify(content)	
@@ -26,9 +26,9 @@ def token():
 @app.route('/')
 def index():
 	cursor = mysql.connect().cursor()
-	cursor.execute("SELECT ques from user where qid=1")
-	data=cursor.fetchone()
-	return str(data)
+	#cursor.execute("SELECT ques from user where qid=1")
+	#data=cursor.fetchone()
+	return "hello"
 	
 @app.route('/<id>')
 def user(id):
