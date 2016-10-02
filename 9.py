@@ -10,9 +10,9 @@ app.config['MYSQL_DATABASE_DB'] = 'proj'
 app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
 mysql.init_app(app)
 mysql.connect().autocommit(True)
-token="213032540:AAEo6Jidn1uiB_7SI4Papiyh381ORSJR6UE"
+token="289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ"
 bot=telegram.Bot(token)
-@app.route('/213032540:AAEo6Jidn1uiB_7SI4Papiyh381ORSJR6UE/webhook',methods=['get','post'])
+@app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	content=request.json
 	print content
@@ -41,10 +41,9 @@ def token():
 		bot.sendPhoto(chat_id=chat_id,photo=open('/home/baaje/Desktop/smart_phone/sm/smart-phone/images.jpeg','rb'),reply_markup=reply_markup)
 
 	elif content['callback_query']['data']=='21':
-		ch=content['callback_query']
+		#ch=content['callback_query']
 		#bot.answerCallbackQuery(callback_query_id=callback_query.id ,text="you selected "+Update.callback_query.data)
-		bot.editMessageText(text="Selected option: %s " % ch['data'],chat_id=chat_id,message_id=content['message']['message_id'])
-	
+		#bot.editMessageText(text="Selected option: %s " % ch['data'],chat_id=chat_id,message_id=content['message']['message_id'])
 	return jsonify(content)
 
 if __name__ == "__main__":
