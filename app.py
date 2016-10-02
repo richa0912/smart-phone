@@ -19,13 +19,16 @@ def token():
 		lname=content['message']['chat']['last_name']
 		test = content['message']['text']
 		chat_id=str(content['message']['chat']['id'])
-		if test == '/start':
+		str1="welcome "+fname+" "+lname+ " you sent "+ test
+		print content
+		r = requests.post('https://api.telegram.org/bot289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/sendMessage?chat_id='+chat_id+'&text='+str1, data = {'chatid':'229720277', 'message': 'please'})
+		'''if test == '/start':
 			str1="Welcome "+fname+" "+lname+ "!"+ "Would you like to start a quiz now?"
 		else:
 			str1 = test
 			print content
 		r = requests.post('https://api.telegram.org/bot289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/sendMessage?chat_id='+chat_id+'&text='+str1+'&reply_markup={inline_keyboard: [{"text":"Yes"},{"text": "No"}]}', data = {'chatid':'229720277', 'message': 'please'})
-		#print(r)
+		#print(r)'''
 		return jsonify(content)	
 
 @app.route('/')
