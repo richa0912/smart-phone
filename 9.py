@@ -1,5 +1,4 @@
 from flask import Flask,url_for,request,json,jsonify
-from telegram.ext import Updater,CommandHandler
 from flaskext.mysql import MySQL
 from telegram import InlineKeyboardButton,InlineKeyboardMarkup,ReplyMarkup,Update,CallbackQuery
 import requests,telegram
