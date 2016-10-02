@@ -10,9 +10,9 @@ app.config['MYSQL_DATABASE_DB'] = 'proj'
 app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
 mysql.init_app(app)
 mysql.connect().autocommit(True)
-token="213032540:AAEo6Jidn1uiB_7SI4Papiyh381ORSJR6UE"
+token="289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ"
 bot=telegram.Bot(token)
-@app.route('/213032540:AAEo6Jidn1uiB_7SI4Papiyh381ORSJR6UE/webhook',methods=['get','post'])
+@app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	content=request.json
 	print content
