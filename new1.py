@@ -13,10 +13,10 @@ app.config['MYSQL_DATABASE_DB'] = 'project'
 app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
 mysql.init_app(app)
 mysql.connect().autocommit(True)
-token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
+token="289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ"
 bot=telegram.Bot(token)
 chat_id="null"
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
+@app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	global chat_id
 	d=[]
@@ -206,4 +206,4 @@ def checkans(gans):
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/?RT'
-    app.run(debug=True)
+    app.run(host='127.0.0.1')
