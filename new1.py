@@ -19,9 +19,11 @@ chat_id="null"
 @app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
 def token():
 	global chat_id
+	d=[]
 	content=request.json
-	#print session
-	if "callback_query" in content:
+	#print content
+	if 'callback_query' in content:
+		print "why"
 		t=time.time()
 		chat_id=str(content['callback_query']['message']['chat']['id'])
 	elif 'location' in content['message']:
@@ -30,48 +32,65 @@ def token():
 	elif 'text' in content['message']:
 		chat_id=str(content['message']['chat']['id'])
 	print session
+	
 	for session_list in session:
-		if chat_id in session_list:
-			print "ho"
-			if session[chat_id][1]%5==0:
-				reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
-				bot.sendMessage(session[chat_id][0], 'Sorry for interrupting!'+name, reply_markup=reply_markup)		
-		
-			if "callback_query" in content:
-				#t=time.time()
-				session[chat_id][5]=session[chat_id][5]-t
-				gans=content['callback_query']['data']
-				tcheck=content['callback_query']['message']['date']
-				internet_check=t-tcheck
-				if (t-int(internet_check))>10000 and session[chat_id][0]%4==0:
-					bot.sendMessage(session[chat_id][0], "It seems your internet not working properly. Don't worry your current status is saved:)" )
-				checkans(str(gans))
-				#print data
-				#i=i+1
-				takeques()
+		d.append(session_list)
+	#print d
+	#print chat_id
+	if chat_id in d:
+		#print "ho"
+		if session[chat_id][1]%5==0:
+			reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
+			bot.sendMessage(session[chat_id][0], 'Sorry for interrupting!'+name, reply_markup=reply_markup)		
+	
+		if "callback_query" in content:
+			t=time.time()
+			print t
+			#print session[chat_id][5]
+			session[chat_id][5]=session[chat_id][5]-int(t)
+			gans=content['callback_query']['data']
+			tcheck=content['callback_query']['message']['date']
+			internet_check=t-tcheck
+			if (t-int(internet_check))>10000 and session[chat_id][0]%4==0:
+				bot.sendMessage(session[chat_id][0], "It seems your internet not working properly. Don't worry your current status is saved:)" )
+			checkans(str(gans))
+			#print data
+			#i=i+1
+			giveques()
 
-			elif 'text' in content['message']:
-				fname=content['message']['chat']['first_name']
-				lname=content['message']['chat']['last_name']
-				name=fname+" "+lname
-				msg = content['message']['text']
-				start(name,msg)
-		
-			elif 'location' in content['message']:
-				longi = content['message']['location']['longitude']
-				lati = content['message']['location']['latitude']
-				fname=content['message']['chat']['first_name']
-				lname=content['message']['chat']['last_name']
-				name=fname+" "+lname
+		elif 'text' in content['message']:
+			fname=content['message']['chat']['first_name']
+			lname=content['message']['chat']['last_name']
+			name=fname+" "+lname
+			msg = content['message']['text']
+			start(name,msg)
+	
+		elif 'location' in content['message']:
+			longi = content['message']['location']['longitude']
+			lati = content['message']['location']['latitude']
+			fname=content['message']['chat']['first_name']
+			lname=content['message']['chat']['last_name']
+			name=fname+" "+lname
+			try:
 				geolocator = GoogleV3()
 				#location = geolocator.reverse("52.509669, 13.376294")
 				location = geolocator.reverse((lati,longi))
 				adduser(name,str(location[0]))
-				bot.sendMessage(session[chat_id][0], text="The quiz is about to start.")
-				giveques()
-	
-		else:
-			print "not working"
+			except:
+				adduser(name,"null")
+			
+			bot.sendMessage(session[chat_id][0], text="The quiz is about to start.")
+			giveques()
+
+
+	else:
+		#print chat_id
+		if 'text' in content['message']:
+			fname=content['message']['chat']['first_name']
+			lname=content['message']['chat']['last_name']
+			name=fname+" "+lname
+			msg = content['message']['text']
+			start(name,msg)
 
 	return jsonify(content)
 	
@@ -84,11 +103,13 @@ def start(name,msg):
 		session[chat_id].append(strftime("%Y-%m-%d %H:%M:%S")) #2.stime
 		session[chat_id].append([]) #3.motion
 		session[chat_id].append(0)	#4.score
+		session[chat_id].append(0) # 5.qtime
 		adduser(name,0)
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(session[chat_id][0], 'Hey '+name, reply_markup=reply_markup)
 	
 	elif msg=='/stat':
+		list=[]
 		db=mysql.connect()
 		cursor=db.cursor()
 		cursor.execute("select avg(qtime) from userques where qid=%s",session[chat_id][1])
@@ -99,10 +120,13 @@ def start(name,msg):
 		cursor.execute("select location from user where uid=%s",session[chat_id][0])
 		locat=cursor.fetchall()
 		cursor.execute("select name,score from user where location=%s",locat)
-		locat=cursor.fetchall()
+		data=cursor.fetchall()
 		for i in locat:
-			s=locat
-		bot.sendMessage(session[chat_id][0], 'Scores(out of 10) of people near you: '+locat)
+			s=data[i][0]+" "+data[i][1]+"\n"
+			list.append(s)
+		bot.sendMessage(session[chat_id][0], 'Scores(out of 10) of people near you: '+s)
+		
+		
 	
 	else:
 		checkans(msg)
@@ -151,7 +175,7 @@ def giveques():
 		keyboard = [[InlineKeyboardButton(option[0][0], callback_data='A')],[InlineKeyboardButton(option[0][1], callback_data='B')],[InlineKeyboardButton(option[0][2], callback_data='C')],[InlineKeyboardButton(option[0][3], callback_data='D')] ]
 		reply_markup = InlineKeyboardMarkup(keyboard)
 	bot.sendMessage(session[chat_id][0], text="Ques."+str(session[chat_id][1])+" "+ques[0][0], reply_markup=reply_markup)
-	session[chat_id].append(time.time())	#5 is the qtime
+	session[chat_id][5]=time.time()	#5 is the qtime
 	
 	
 def checkans(gans):
