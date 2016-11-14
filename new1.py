@@ -23,7 +23,7 @@ def token():
 	content=request.json
 	print session
 	try:
-		#print content
+		print content
 		if 'callback_query' in content:
 			print "why"
 			t=time.time()
@@ -112,6 +112,7 @@ def start(name,msg):
 		session[chat_id].append(0) # 5.qtime
 		adduser(name,0)
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
+		print session
 		bot.sendMessage(session[chat_id][0], 'Hey '+name, reply_markup=reply_markup)
 	
 	elif msg=='/stat':
