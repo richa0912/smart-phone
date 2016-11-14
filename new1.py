@@ -21,7 +21,7 @@ def token():
 	global chat_id
 	d=[]
 	content=request.json
-	#print content
+	print content
 	if 'callback_query' in content:
 		print "why"
 		t=time.time()
@@ -36,7 +36,7 @@ def token():
 	for session_list in session:
 		d.append(session_list)
 	#print d
-	#print chat_id
+	print chat_id
 	if chat_id in d:
 		#print "ho"
 		if session[chat_id][1]%5==0:
@@ -113,14 +113,15 @@ def start(name,msg):
 		db=mysql.connect()
 		cursor=db.cursor()
 		cursor.execute("select avg(qtime) from userques where qid=%s",session[chat_id][1])
-		avg=cursor.fetchall()
+		avg=str(cursor.fetchall())
 		cursor.execute("select score from user where uid=%s",session[chat_id][0])
-		correct=cursor.fetchall()
+		correct=str(cursor.fetchall())
 		bot.sendMessage(session[chat_id][0], 'Hey'+name+' .Your score: '+correct+'. You took on an average '+avg+' seconds to do a ques.')
 		cursor.execute("select location from user where uid=%s",session[chat_id][0])
-		locat=cursor.fetchall()
+		locat=str(cursor.fetchall())
 		cursor.execute("select name,score from user where location=%s",locat)
-		data=cursor.fetchall()
+		data=str(cursor.fetchall())
+		print data
 		for i in locat:
 			s=data[i][0]+" "+data[i][1]+"\n"
 			list.append(s)
