@@ -21,22 +21,28 @@ def token():
 	global chat_id
 	d=[]
 	content=request.json
-	print content
-	if 'callback_query' in content:
-		print "why"
-		t=time.time()
-		chat_id=str(content['callback_query']['message']['chat']['id'])
-	elif 'location' in content['message']:
-		chat_id=str(content['message']['chat']['id'])
+	print session
+	try:
+		#print content
+		if 'callback_query' in content:
+			print "why"
+			t=time.time()
+			chat_id=str(content['callback_query']['message']['chat']['id'])
+		elif 'location' in content['message']:
+			chat_id=str(content['message']['chat']['id'])
 	
-	elif 'text' in content['message']:
-		chat_id=str(content['message']['chat']['id'])
+		elif 'text' in content['message']:
+			chat_id=str(content['message']['chat']['id'])
+	
+	except:
+		print content
+		giveques()
 	print session
 	
 	for session_list in session:
 		d.append(session_list)
 	#print d
-	print chat_id
+	#print chat_id
 	if chat_id in d:
 		#print "ho"
 		if session[chat_id][1]%5==0:
