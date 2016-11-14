@@ -27,11 +27,11 @@ def token():
 	global chat_id
 	d=[]
 	content=request.json
-	print session
+	#print session
 	try:
-		#print content
+		print content
 		if 'callback_query' in content:
-			print "why"
+			#print "why"
 			t=time.time()
 			chat_id=str(content['callback_query']['message']['chat']['id'])
 		elif 'reply_to_message' in content['message']:
@@ -48,7 +48,7 @@ def token():
 	for session_list in session:
 		d.append(session_list)
 	#print d
-	#print chat_id
+	print chat_id
 	if chat_id in d:
 		#print "ho"
 		if session[chat_id][1]%5==0:
@@ -60,6 +60,7 @@ def token():
 			print t
 			#print session[chat_id][5]
 			session[chat_id][5]=session[chat_id][5]-int(t)
+			session.modified=True
 			gans=content['callback_query']['data']
 			tcheck=content['callback_query']['message']['date']
 			internet_check=t-tcheck
@@ -116,6 +117,7 @@ def start(name,msg):
 		session[chat_id].append([]) #3.motion
 		session[chat_id].append(0)	#4.score
 		session[chat_id].append(0) # 5.qtime
+		session.modified=True
 		print session
 		adduser(name,0)
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
@@ -161,6 +163,7 @@ def adduser(uname,location):
 			session[chat_id][3].append('stationary')	#list of motions
 		else:
 			session[chat_id][3].append("moving")
+		session.modified=True
 		cursor.execute("""update user set location=%s,stime=%s where uid=%s""",(location,session[chat_id][2],session[chat_id][0]))
 		db.commit()
 
@@ -190,7 +193,7 @@ def giveques():
 		reply_markup = InlineKeyboardMarkup(keyboard)
 	bot.sendMessage(session[chat_id][0], text="Ques."+str(session[chat_id][1])+" "+ques[0][0], reply_markup=reply_markup)
 	session[chat_id][5]=time.time()	#5 is the qtime
-	
+	session.modified=True
 	
 def checkans(gans):
 	global chat_id
@@ -203,6 +206,7 @@ def checkans(gans):
 	if gans==cans:
 		status='correct'
 		session[chat_id][4]+=1
+		session.modified=True
 	else:
 		status='incorrect'	
 	db=mysql.connect()
@@ -216,7 +220,7 @@ def checkans(gans):
 	exp=cursor.fetchall()
 	bot.sendMessage(session[chat_id][0], text=str(status+". Explaination- "+str(exp)))
 	session[chat_id][1]+=1
-
+	session.modified=True
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/?RT'
