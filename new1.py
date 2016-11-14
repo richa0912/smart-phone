@@ -34,8 +34,8 @@ def token():
 			print "why"
 			t=time.time()
 			chat_id=str(content['callback_query']['message']['chat']['id'])
-		elif 'location' in content['message']:
-			chat_id=str(content['message']['chat']['id'])
+		elif 'reply_to_message' in content['message']:
+			chat_id=str(content['message']['reply_to_message']['chat']['id'])
 	
 		elif 'text' in content['message']:
 			chat_id=str(content['message']['chat']['id'])
@@ -77,11 +77,11 @@ def token():
 			msg = content['message']['text']
 			start(name,msg)
 	
-		elif 'location' in content['message']:
-			longi = content['message']['location']['longitude']
-			lati = content['message']['location']['latitude']
-			fname=content['message']['chat']['first_name']
-			lname=content['message']['chat']['last_name']
+		elif 'reply_to_message' in content['message']:
+			longi = content['message']['reply_to_message']['location']['longitude']
+			lati = content['message']['reply_to_message']['location']['latitude']
+			fname=content['message']['reply_to_message']['chat']['first_name']
+			lname=content['message']['reply_to_message']['chat']['last_name']
 			name=fname+" "+lname
 			try:
 				geolocator = GoogleV3()
@@ -220,4 +220,4 @@ def checkans(gans):
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/?RT'
-    app.run(debug='0.0.0.0')
+    app.run(host='0.0.0.0')
