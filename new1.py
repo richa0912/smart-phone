@@ -2,6 +2,8 @@ from flask import Flask,url_for,request,json,jsonify,session
 from flaskext.mysql import MySQL
 from geopy.geocoders import Nominatim,GoogleV3
 import time
+from datetime import timedelta
+from flask import session, app
 from time import strftime
 from telegram import InlineKeyboardButton,InlineKeyboardMarkup,ReplyKeyboardMarkup,ReplyMarkup,Update,CallbackQuery
 import requests,telegram
@@ -16,6 +18,10 @@ mysql.connect().autocommit(True)
 token="289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ"
 bot=telegram.Bot(token)
 chat_id="null"
+@app.before_request
+def make_session_permanent():
+    session.permanent = True
+    app.permanent_session_lifetime = timedelta(days=5)
 @app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	global chat_id
@@ -110,6 +116,7 @@ def start(name,msg):
 		session[chat_id].append([]) #3.motion
 		session[chat_id].append(0)	#4.score
 		session[chat_id].append(0) # 5.qtime
+		print session
 		adduser(name,0)
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(session[chat_id][0], 'Hey '+name, reply_markup=reply_markup)
@@ -213,4 +220,4 @@ def checkans(gans):
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/?RT'
-    app.run(host='0.0.0.0')
+    app.run(debug='0.0.0.0')
