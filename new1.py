@@ -13,15 +13,15 @@ app.config['MYSQL_DATABASE_DB'] = 'project'
 app.config['MYSQL_DATABASE_HOST'] = '127.0.0.1'
 mysql.init_app(app)
 mysql.connect().autocommit(True)
-token="274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4"
+token="289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ"
 bot=telegram.Bot(token)
 chat_id="null"
-@app.route('/274697834:AAHhDcqLAQ0fosM45R6haddl8U64smE62b4/webhook',methods=['get','post'])
+@app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	global chat_id
 	d=[]
 	content=request.json
-	#print content
+	print content
 	if 'callback_query' in content:
 		print "why"
 		t=time.time()
@@ -36,7 +36,7 @@ def token():
 	for session_list in session:
 		d.append(session_list)
 	#print d
-	#print chat_id
+	print chat_id
 	if chat_id in d:
 		#print "ho"
 		if session[chat_id][1]%5==0:
@@ -113,14 +113,15 @@ def start(name,msg):
 		db=mysql.connect()
 		cursor=db.cursor()
 		cursor.execute("select avg(qtime) from userques where qid=%s",session[chat_id][1])
-		avg=cursor.fetchall()
+		avg=str(cursor.fetchall())
 		cursor.execute("select score from user where uid=%s",session[chat_id][0])
-		correct=cursor.fetchall()
+		correct=str(cursor.fetchall())
 		bot.sendMessage(session[chat_id][0], 'Hey'+name+' .Your score: '+correct+'. You took on an average '+avg+' seconds to do a ques.')
 		cursor.execute("select location from user where uid=%s",session[chat_id][0])
-		locat=cursor.fetchall()
+		locat=str(cursor.fetchall())
 		cursor.execute("select name,score from user where location=%s",locat)
-		data=cursor.fetchall()
+		data=str(cursor.fetchall())
+		print data
 		for i in locat:
 			s=data[i][0]+" "+data[i][1]+"\n"
 			list.append(s)
@@ -206,4 +207,4 @@ def checkans(gans):
 
 if __name__ == "__main__":
     app.secret_key = 'A0Zr98j/3yX R~XHH!jmN]LWX/?RT'
-    app.run(debug=True)
+    app.run(host='127.0.0.1')
