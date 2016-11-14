@@ -34,7 +34,11 @@ def token():
 			print "why"
 			t=time.time()
 			chat_id=str(content['callback_query']['message']['chat']['id'])
+<<<<<<< HEAD
 		elif 'location' in content['message']['reply_to_message']:
+=======
+		elif 'reply_to_message' in content['message']:
+>>>>>>> 296dda8c5f4526d2cba09048f5b55de9db65e3e1
 			chat_id=str(content['message']['reply_to_message']['chat']['id'])
 	
 		elif 'text' in content['message']:
@@ -77,7 +81,11 @@ def token():
 			msg = content['message']['text']
 			start(name,msg)
 	
+<<<<<<< HEAD
 		elif 'location' in content['message']['reply_to_message']:
+=======
+		elif 'reply_to_message' in content['message']:
+>>>>>>> 296dda8c5f4526d2cba09048f5b55de9db65e3e1
 			longi = content['message']['reply_to_message']['location']['longitude']
 			lati = content['message']['reply_to_message']['location']['latitude']
 			fname=content['message']['reply_to_message']['chat']['first_name']
