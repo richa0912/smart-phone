@@ -19,7 +19,7 @@ def token():
 	content=request.json
 	db=mysql.connect()
 	cursor=db.cursor()
-	#print content
+	print content
 	'''if i%5==0:
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
 		bot.sendMessage(chat_id, 'Sorry for interrupting!'+name, reply_markup=reply_markup)
@@ -183,7 +183,7 @@ def checkans(i,chat_id,gans):
 	cursor.execute("select exp from quesbank where qid=%s",str(i[0][0]))
 	print i
 	exp=cursor.fetchall()
-	bot.sendMessage(chat_id=chat_id, text=str(status)+"\nExplaination- "+str(exp[0][0]))
+	bot.sendMessage(chat_id, status+". Explaination- "+exp[0][0])
 	db.close()
 	
 	
