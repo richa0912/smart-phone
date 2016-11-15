@@ -31,8 +31,8 @@ def token():
 	
 	cursor.execute("select update_id from user where uid=%s",chat_id)
 	update_id=cursor.fetchall()
-	print update_id[0][0]
-	if int(content['update_id']) > int(update_id[0][0]) or cursor.rowcount==0:
+#	print update_id[0][0]
+	if cursor.rowcount==0 or int(content['update_id']) > int(update_id[0][0]):
 		updateid=content['update_id']	
 		if "callback_query" in content:
 			gans=content['callback_query']['data']
@@ -131,7 +131,7 @@ def takeques(i,chat_id):
 			#option=cursor.fetchall()
 			#print option
 	
-			if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
+			if ques[0][4]=='NULL':	#checking numeric or multiple
 				keyboard = [
 		    ['7', '8', '9'],
 		    ['4', '5', '6'],
