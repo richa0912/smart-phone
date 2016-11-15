@@ -31,8 +31,8 @@ def token():
 	
 	cursor.execute("select update_id from user where uid=%s",chat_id)
 	update_id=cursor.fetchall()
-	print update_id[0]
-	if content['update_id']>update_id :
+	print update_id
+	if content['update_id']>update_id or cursor.rowcount==0:
 		updateid=content['update_id']
 	
 		'''if i%5==0:
@@ -158,6 +158,7 @@ def takeques(i,chat_id):
 			#takeques(int(q[0][0])+1,chat_id)
 	else:
 		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
+		db.commit()
 		cursor.execute("select avg(qtime) from userques where qid=%s",i)
 		avg=str(cursor.fetchall())
 		print avg
@@ -173,7 +174,6 @@ def takeques(i,chat_id):
 			s=data[i][0]+" "+data[i][1]+"\n"
 			list.append(s)
 		bot.sendMessage(chat_id, 'Scores(out of 10) of people near you: '+s)
-		cursor.execute("update user set  from userques where qid=%s",i)
 
 	
 def checkans(i,chat_id,gans):
