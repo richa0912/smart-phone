@@ -49,8 +49,8 @@ def token():
 			db.commit()
 			db.close()
 		
-			if (t-int(tcheck))>10000:
-				bot.sendMessgae(chat_id, "It seems your internet not working properly. Don't worry your current status is saved :)")
+			if (t-int(tcheck))>120:
+				bot.sendMessgae(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
 			checkans(i,chat_id,gans)
 			#print data
 			#i=i+1
@@ -126,12 +126,12 @@ def takeques(i,chat_id):
 			db.commit()
 			cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
 			ques=cursor.fetchall()
-			print cursor
+			print ques
 			#cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
 			#option=cursor.fetchall()
 			#print option
 	
-			if ques[0][3]=='NULL' :				#checking numeric or multiple
+			if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
 				keyboard = [
 		    ['7', '8', '9'],
 		    ['4', '5', '6'],
@@ -156,23 +156,37 @@ def takeques(i,chat_id):
 			#db.close()
 			#takeques(int(q[0][0])+1,chat_id)
 	else:
+		l=[]
+		x=[]
 		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
 		db.commit()
-		cursor.execute("select avg(qtime) from userques where qid=%s",i)
+		cursor.execute("select avg(qtime) from userques where chat_id=%s",chat_id)
 		avg=str(cursor.fetchall())
 		print avg
 		cursor.execute("select score from user where uid=%s",chat_id)
 		correct=str(cursor.fetchall())
-		bot.sendMessage(chat_id, "Completed. Your score: " +correct[0][0]+ ". You took on an average " +avg[0][0]+ ' seconds to do a ques.' )
+		bot.sendMessage(chat_id, "Completed. Your score: " +correct[0][0]+ " out of 10.\n You took on an average " +avg[0][0]+ ' seconds to do a ques.' )
+		
+		cursor.execute("select name,score from user order by score desc limit 3")
+		glo=cursor.fetchall()
+		if cursor.rowcount>0:
+			for k in len(data):
+				s=glo[k][0]+" "+glo[k][1]+"\n"
+				x.append(s)
+			bot.sendMessage(chat_id, 'Global Rank. Top 3 players '+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locat=str(cursor.fetchall())
-		cursor.execute("select name,score from user where location=%s",locat)
+		cursor.execute("select name,score from user order by score where location=%s",locat)
 		data=str(cursor.fetchall())
-		print data
-		for i in data:
-			s=data[i][0]+" "+data[i][1]+"\n"
-			list.append(s)
-		bot.sendMessage(chat_id, 'Scores(out of 10) of people near you: '+s)
+		#print data
+		if cursor.rowcount>0:
+			for k in len(data):
+				s=data[k][0]+" "+data[k][1]+"\n"
+				l.append(s)
+			bot.sendMessage(chat_id, 'Local Rank of people near you: '+s)
+		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
+		cursor.execute("update userques set qid=0, canswer=0, ganswer=0, status=0,qtime=0 where uid=%s",chat_id)
+		db.commit()
 
 	
 def checkans(i,chat_id,gans):
