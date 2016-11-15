@@ -20,71 +20,83 @@ def token():
 	db=mysql.connect()
 	cursor=db.cursor()
 	print content
-	'''if i%5==0:
-		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
-		bot.sendMessage(chat_id, 'Sorry for interrupting!'+name, reply_markup=reply_markup)
-	'''	
 	if "callback_query" in content:
 		chat_id=str(content['callback_query']['message']['chat']['id'])
-		gans=content['callback_query']['data']
-		tcheck=content['callback_query']['message']['date']
-		cursor.execute("select qid from user where uid=%s",chat_id)
-		i=cursor.fetchall()
-		
-		cursor.execute("select qtime from userques where qid=%s and uid=%s",(i[0][0],chat_id))
-		qtime=cursor.fetchall()
-		t=time.time()
-		qt=t-qtime[0][0]
-		print t
-		cursor.execute("update userques set qtime=%s where qid=%s and uid=%s",(qt,i[0][0],chat_id))
-		db.commit()
-		db.close()
-		
-		if (t-int(tcheck))>10000:
-			print "It seems your internet not working properly. Don't worry your current status is saved :)"
-		checkans(i,chat_id,gans)
-		#print data
-		#i=i+1
-		takeques(int(i[0][0])+1,chat_id)
-		
+	
 	elif 'location' in content['message']:  #.index(['location']) is not None:
-		longi = content['message']['location']['longitude']
-		lati = content['message']['location']['latitude']
-		fname=content['message']['chat']['first_name']
-		lname=content['message']['chat']['last_name']
-		name=fname+" "+lname
-		geolocator = GoogleV3()
 		chat_id=content['message']['chat']['id']
+	
+	elif 'text' in content['message']:
+		chat_id=str(content['message']['chat']['id'])
+	
+	cursor.execute("select update_id from user where uid=%s",chat_id)
+	update_id=cursor.fetchall()
+	if content['update_id']>update_id :
+		updateid=content['update_id']
+	
+		'''if i%5==0:
+			reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
+			bot.sendMessage(chat_id, 'Sorry for interrupting!'+name, reply_markup=reply_markup)
+		'''	
+	
+		if "callback_query" in content:
+			gans=content['callback_query']['data']
+			tcheck=content['callback_query']['message']['date']
+			cursor.execute("select qid from user where uid=%s",chat_id)
+			i=cursor.fetchall()
+		
+			cursor.execute("select qtime from userques where qid=%s and uid=%s",(i[0][0],chat_id))
+			qtime=cursor.fetchall()
+			t=time.time()
+			qt=t-qtime[0][0]
+			print t
+			cursor.execute("update userques set qtime=%s where qid=%s and uid=%s",(qt,i[0][0],chat_id))
+			db.commit()
+			db.close()
+		
+			if (t-int(tcheck))>10000:
+				bot.sendMessgae(chat_id, "It seems your internet not working properly. Don't worry your current status is saved :)")
+			checkans(i,chat_id,gans)
+			#print data
+			#i=i+1
+			takeques(int(i[0][0])+1,chat_id)
+		
+		elif 'location' in content['message']:  #.index(['location']) is not None:
+			longi = content['message']['location']['longitude']
+			lati = content['message']['location']['latitude']
+			fname=content['message']['chat']['first_name']
+			lname=content['message']['chat']['last_name']
+			name=fname+" "+lname
+			geolocator = GoogleV3()
 
-		location = geolocator.reverse((lati,longi))
-		#print location
-		adduser(chat_id,0,name,str(location[0]))
-		bot.sendMessage(chat_id, text="The quiz is about to start.")
+			location = geolocator.reverse((lati,longi))
+			#print location
+			adduser(chat_id,0,name,str(location[0]),updateid)
+			bot.sendMessage(chat_id, text="The quiz is about to start.")
 
-		cursor.execute("select qid from user where uid=%s",str(chat_id))
-		q=cursor.fetchall()
-		db.close()
-		takeques(int(q[0][0])+1,chat_id)
+			cursor.execute("select qid from user where uid=%s",str(chat_id))
+			q=cursor.fetchall()
+			db.close()
+			takeques(int(q[0][0])+1,chat_id)
 		
 
 
 	
-	elif 'text' in content['message']:
-		fname=content['message']['chat']['first_name']
-		lname=content['message']['chat']['last_name']
-		name=fname+" "+lname
-		msg = content['message']['text']
-		chat_id=str(content['message']['chat']['id'])
-		start(name,chat_id,msg)
-		db.close()
+		elif 'text' in content['message']:
+			fname=content['message']['chat']['first_name']
+			lname=content['message']['chat']['last_name']
+			name=fname+" "+lname
+			msg = content['message']['text']
+			start(name,chat_id,msg,updateid)
+			db.close()
 	#db.close()
 	return jsonify(content)
 
-def adduser(uid,stime,uname,location):
+def adduser(uid,stime,uname,location,updateid):
 	db=mysql.connect()
 	cursor=db.cursor()
 	try:
-		cursor.execute("""INSERT INTO user (uid,qid,name,stime,etime,location,loc_stat,score) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)""",(uid,0,uname,stime,0,"null","null",0))
+		cursor.execute("""INSERT INTO user (uid,qid,name,stime,etime,location,loc_stat,score,update_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(uid,0,uname,stime,0,"null","null",0,updateid))
 		db.commit()
 	except Exception as e:
 		cursor.execute("select location,loc_stat from user where uid=%s",str(uid))
@@ -96,7 +108,7 @@ def adduser(uid,stime,uname,location):
 #			cursor.execute("""update user set location=%s where uid=%s""",(loc[0],stime,uid))
 		else:
 			x=loc[0][1]+",moving"
-		cursor.execute("""update user set loc_stat=%s,location=%s where uid=%s""",(x,location,uid))
+		cursor.execute("""update user set loc_stat=%s,location=%s,update_id=%s where uid=%s""",(x,location,updateid,uid))
 		db.commit()
 		db.close()
 
@@ -104,6 +116,9 @@ def adduser(uid,stime,uname,location):
 def takeques(i,chat_id):
 	db=mysql.connect()
 	cursor=db.cursor()
+	if i==5:
+		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
+			bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 	if(i<=10):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
@@ -141,7 +156,7 @@ def takeques(i,chat_id):
 			#db.close()
 			#takeques(int(q[0][0])+1,chat_id)
 	else:
-		
+		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
 		cursor.execute("select avg(qtime) from userques where qid=%s",i)
 		avg=str(cursor.fetchall())
 		print avg
@@ -157,6 +172,7 @@ def takeques(i,chat_id):
 			s=data[i][0]+" "+data[i][1]+"\n"
 			list.append(s)
 		bot.sendMessage(chat_id, 'Scores(out of 10) of people near you: '+s)
+		cursor.execute("update user set  from userques where qid=%s",i)
 
 	
 def checkans(i,chat_id,gans):
@@ -189,10 +205,10 @@ def checkans(i,chat_id,gans):
 	
 	
 		
-def start(name,chat_id,msg):
+def start(name,chat_id,msg,updateid):
 		if msg=='/start':
 			stime=time.time()
-			st=adduser(chat_id,stime,name,0)
+			st=adduser(chat_id,stime,name,0,updateid)
 			reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
 			bot.sendMessage(chat_id, 'Hey '+name, reply_markup=reply_markup)
 		
