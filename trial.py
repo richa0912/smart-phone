@@ -31,6 +31,7 @@ def token():
 	
 	cursor.execute("select update_id from user where uid=%s",chat_id)
 	update_id=cursor.fetchall()
+	print update_id[0]
 	if content['update_id']>update_id :
 		updateid=content['update_id']
 	
@@ -118,7 +119,7 @@ def takeques(i,chat_id):
 	cursor=db.cursor()
 	if i==5:
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
-			bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
+		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 	if(i<=10):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
@@ -131,7 +132,7 @@ def takeques(i,chat_id):
 			#option=cursor.fetchall()
 			#print option
 	
-			if ques[0][3]=='null' :				#checking numeric or multiple
+			if ques[0][3]=='NULL' :				#checking numeric or multiple
 				keyboard = [
 		    ['7', '8', '9'],
 		    ['4', '5', '6'],
