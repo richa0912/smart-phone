@@ -31,15 +31,9 @@ def token():
 	
 	cursor.execute("select update_id from user where uid=%s",chat_id)
 	update_id=cursor.fetchall()
-	print update_id
-	if content['update_id']>update_id or cursor.rowcount==0:
-		updateid=content['update_id']
-	
-		'''if i%5==0:
-			reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=False,resize_keyboard=True)
-			bot.sendMessage(chat_id, 'Sorry for interrupting!'+name, reply_markup=reply_markup)
-		'''	
-	
+	print content['update_id']
+	if content['update_id']>update_id[0][0] or cursor.rowcount==0:
+		updateid=content['update_id']	
 		if "callback_query" in content:
 			gans=content['callback_query']['data']
 			tcheck=content['callback_query']['message']['date']
