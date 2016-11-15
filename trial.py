@@ -31,8 +31,8 @@ def token():
 	
 	cursor.execute("select update_id from user where uid=%s",chat_id)
 	update_id=cursor.fetchall()
-	print content['update_id']
-	if content['update_id']>update_id[0][0] or cursor.rowcount==0:
+	print update_id[0][0]
+	if int(content['update_id']) > int(update_id[0][0]) or cursor.rowcount==0:
 		updateid=content['update_id']	
 		if "callback_query" in content:
 			gans=content['callback_query']['data']
