@@ -67,10 +67,15 @@ def token():
 			location = geolocator.reverse((lati,longi))
 			#print location
 			adduser(chat_id,0,name,str(location[0]),updateid)
-			bot.sendMessage(chat_id, text="The quiz is about to start.")
 
 			cursor.execute("select qid from user where uid=%s",str(chat_id))
 			q=cursor.fetchall()
+			if q[0][0]==0:
+				bot.sendMessage(chat_id, text="The quiz is about to start.")
+			elif q[0][0]==5:
+				bot.sendMessage(chat_id, text="Continuing the same session of quiz... ")
+
+
 			db.close()
 			takeques(int(q[0][0])+1,chat_id)
 		
@@ -178,7 +183,7 @@ def checkans(i,chat_id,gans):
 	cans=cursor.fetchall()
 	cursor.execute("select score from user where uid=%s",str(chat_id))
 	score=cursor.fetchall()
-	if gans==cans:
+	if gans==cans[0][0]:
 		status='Correct'
 		cursor.execute("""update user set score=%s where uid=%s""",(int(score[0][0])+1,chat_id))
 		db.commit()
@@ -194,7 +199,7 @@ def checkans(i,chat_id,gans):
 	cursor.execute("select exp from quesbank where qid=%s",str(i[0][0]))
 	print i
 	exp=cursor.fetchall()
-	bot.sendMessage(chat_id, status+". Explaination- "+exp[0][0])
+	bot.sendMessage(chat_id, status+".\nExplaination- "+exp[0][0])
 	db.close()
 	
 	
