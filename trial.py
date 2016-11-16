@@ -187,35 +187,32 @@ def takeques(i,chat_id):
 		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
 		db.commit()
 		cursor.execute("select avg(qtime) from userques where uid=%s",chat_id)
-<<<<<<< HEAD
-		avg=str(cursor.fetchall())
+
+		avg=cursor.fetchall()
 		print avg
-=======
-		avg=int(cursor.fetchall())
-		print avg[0][0]
->>>>>>> b26df9f724cfa3b37b4708a7c66ccb8e5df83d5c
 		cursor.execute("select score from user where uid=%s",chat_id)
-		correct=int(cursor.fetchall())
+		correct=cursor.fetchall()
 		bot.sendMessage(chat_id, "Completed. Your score: " +str(correct[0][0])+ " out of 10.\n You took on an average " +str(avg[0][0])+ ' seconds to do a ques.' )
 		
-		cursor.execute("select name,score from user order by score desc limit 3")
+		cursor.execute("select name,score from user order by score desc")
 		glo=cursor.fetchall()
-		print "\n"+glo+"\n"
+		print "\n"+str(glo)+"\n"
+#		print len(glo)
 		if cursor.rowcount>0:
-			for k in len(data):
-				s=glo[k][0]+" "+glo[k][1]+"\n"
+			for k in range(0,len(glo)):
+				s=str(glo[k][0]+" "+glo[k][1]+"\n")
 				x.append(s)
-			bot.sendMessage(chat_id, 'Global Rank. Top 3 players '+x)
+			bot.sendMessage(chat_id, 'Global Ranking. Top players \n'+str(x))
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locat=str(cursor.fetchall())
-		cursor.execute("select name,score from user order by score where location=%s",locat)
-		data=str(cursor.fetchall())
-		print data
+		print locat
+		cursor.execute("select name,score from user order by score where location=%s",locat[0])
+		data=cursor.fetchall()
 		if cursor.rowcount>0:
-			for k in len(data[0]):
+			for k in range(0,len(data)):
 				s=data[k][0]+" "+data[k][1]+"\n"
 				l.append(s)
-			bot.sendMessage(chat_id, 'Local Rank of people near you: '+s)
+			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+str(s))
 		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
 		cursor.execute("delete from userques where uid=%s",chat_id)
 		db.commit()
@@ -268,7 +265,7 @@ def start(name,chat_id,msg,updateid):
 			checkans(q,chat_id,msg)
 			takeques(int(q[0][0])+1,chat_id)
 		if msg=='/stats':
-			takequiz(11,chat_id)
+			takeques(11,chat_id)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
