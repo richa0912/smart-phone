@@ -206,7 +206,7 @@ def takeques(i,chat_id):
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locat=str(cursor.fetchall())
 		print locat
-		cursor.execute("select name,score from user order by score where location=%s",locat[0])
+		cursor.execute("select name,score from user where location=%s order by score desc",str(locat[0][0]))
 		data=cursor.fetchall()
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
