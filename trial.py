@@ -117,8 +117,6 @@ def takeques(i,chat_id):
 	db=mysql.connect()
 	cursor=db.cursor()
 	if i==5:
-		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
-		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 		cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
 		db.commit()
 		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
@@ -145,6 +143,8 @@ def takeques(i,chat_id):
 
 		cursor.execute("update userques set qtime=%s,canswer=%s where qid=%s and uid=%s",(time.time(),ques[0][1],i,chat_id))
 		db.commit()
+		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
+		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 	elif(i<=10):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
