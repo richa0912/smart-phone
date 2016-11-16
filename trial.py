@@ -126,7 +126,7 @@ def takeques(i,chat_id):
 		#option=cursor.fetchall()
 		#print option
 
-		if ques[0][4]=='NULL':	#checking numeric or multiple
+		if str(ques[0][4]) is 'NULL':	#checking numeric or multiple
 			keyboard = [
 	    ['7', '8', '9'],
 	    ['4', '5', '6'],
@@ -143,7 +143,7 @@ def takeques(i,chat_id):
 
 		cursor.execute("update userques set qtime=%s,canswer=%s where qid=%s and uid=%s",(time.time(),ques[0][1],i,chat_id))
 		db.commit()
-		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
+		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 	elif(i<=10):
 		try:
@@ -202,7 +202,7 @@ def takeques(i,chat_id):
 #		print len(glo)
 		if cursor.rowcount>0:
 			for k in range(0,len(glo)):
-				x+=str(glo[k][0]+" "+glo[k][1])+"\n"
+				x+=str(glo[k][0]+" - "+glo[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Global Ranking. Top players \n'+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locat=str(cursor.fetchall())
@@ -212,9 +212,9 @@ def takeques(i,chat_id):
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				print data[k][1]
-				if data[k][1] >0:
-					s+=str(data[k][0]+" "+data[k][1])+"\n"
+				#print data[k][1]
+				#if data[k][1] >0:
+				s+=str(data[k][0]+" "+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
 		db.commit()
 
