@@ -186,7 +186,7 @@ def takeques(i,chat_id):
 		x=[]
 		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
 		db.commit()
-		cursor.execute("select avg(qtime) from userques where chat_id=%s",chat_id)
+		cursor.execute("select avg(qtime) from userques where uid=%s",chat_id)
 		avg=str(cursor.fetchall())
 		print avg
 		cursor.execute("select score from user where uid=%s",chat_id)
