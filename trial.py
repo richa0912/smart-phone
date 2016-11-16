@@ -216,8 +216,6 @@ def takeques(i,chat_id):
 				if data[k][1] >0:
 					s+=str(data[k][0]+" "+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
-		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
-		cursor.execute("delete from userques where uid=%s",chat_id)
 		db.commit()
 
 	
@@ -253,6 +251,8 @@ def checkans(i,chat_id,gans):
 		
 def start(name,chat_id,msg,updateid):
 		if msg=='/start':
+			cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
+			cursor.execute("delete from userques where uid=%s",chat_id)
 			bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n\n /startquiz \n\n /stats \n\n /syllabus")
 			
 		
@@ -269,6 +269,7 @@ def start(name,chat_id,msg,updateid):
 			takeques(int(q[0][0])+1,chat_id)
 		if msg=='/stats':
 			takeques(11,chat_id)
+			bot.sendMessage(chat_id,"Lets begin.\n\n /startquiz \n\n /stats \n\n /syllabus")
 			
 		if msg=='/syllabus':
 			keyboard = [[InlineKeyboardButton("http://gate.iitr.ernet.in/wp-content/uploads/2016/07/Syllabi_GATE2017.pdf",url="http://gate.iitr.ernet.in/wp-content/uploads/2016/07/Syllabi_GATE2017.pdf")]]
