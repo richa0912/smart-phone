@@ -119,7 +119,33 @@ def takeques(i,chat_id):
 	if i==5:
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Pleae share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
-	if(i<=10):
+		cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
+		db.commit()
+		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
+		ques=cursor.fetchall()
+		print ques
+		#cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
+		#option=cursor.fetchall()
+		#print option
+
+		if ques[0][4]=='NULL':	#checking numeric or multiple
+			keyboard = [
+	    ['7', '8', '9'],
+	    ['4', '5', '6'],
+	    ['1', '2', '3'],
+	    ['-', '.', '0']
+	];
+			reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
+	
+		else:
+			keyboard = [[InlineKeyboardButton(ques[0][2], callback_data='A')],[InlineKeyboardButton(ques[0][3], callback_data='B')],[InlineKeyboardButton(ques[0][4], callback_data='C')],[InlineKeyboardButton(ques[0][5], callback_data='D')] ]
+			reply_markup = InlineKeyboardMarkup(keyboard)
+
+		bot.sendMessage(chat_id, text="Ques."+str(i)+" "+ques[0][0], reply_markup=reply_markup)
+
+		cursor.execute("update userques set qtime=%s,canswer=%s where qid=%s and uid=%s",(time.time(),ques[0][1],i,chat_id))
+		db.commit()
+	elif(i<=10):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
 			cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
@@ -185,7 +211,7 @@ def takeques(i,chat_id):
 				l.append(s)
 			bot.sendMessage(chat_id, 'Local Rank of people near you: '+s)
 		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
-		cursor.execute("update userques set qid=0, canswer=0, ganswer=0, status=0,qtime=0 where uid=%s",chat_id)
+		cursor.execute("delete from userques where uid=%s",chat_id)
 		db.commit()
 
 	
@@ -221,19 +247,22 @@ def checkans(i,chat_id,gans):
 		
 def start(name,chat_id,msg,updateid):
 		if msg=='/start':
+			bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n /startquiz \n /stats \n /syllabus")
+			
+		
+		if msg=='/startquiz':
 			stime=time.time()
 			st=adduser(chat_id,stime,name,0,updateid)
 			reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
 			bot.sendMessage(chat_id, 'Hey '+name, reply_markup=reply_markup)
 		
-		'''elif '/' not in msg:
-			cursor.execute("select answer from quesbank where qid=%s",str(i))
-			a=cursor.fetchall()
-			if msg==a:
-				checkans(i,chat_id,a,qtime)
-				firstques(i,chat_id)
-		#if msg=='/stat':
-		'''
+		elif '/' not in msg:
+			cursor.execute("select qid from user where uid=%s",str(chat_id))
+			q=cursor.fetchall()
+			checkans(q,chat_id,msg)
+			takeques(int(q[0][0])+1,chat_id)
+		if msg=='/stat':
+			takequiz(11,chat_id)
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0')
