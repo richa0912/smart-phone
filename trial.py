@@ -51,6 +51,7 @@ def token():
 		
 			if (t-int(tcheck))>120:
 				bot.sendMessgae(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
+			time.sleep(1000)
 			checkans(i,chat_id,gans)
 			#print data
 			#i=i+1
@@ -99,14 +100,14 @@ def adduser(uid,stime,uname,location,updateid):
 		cursor.execute("""INSERT INTO user (uid,qid,name,stime,etime,location,loc_stat,score,update_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(uid,0,uname,stime,0,"null","null",0,updateid))
 		db.commit()
 	except Exception as e:
+		cursor.execute("select qid from user where uid=%s",str(chat_id))
+		q=cursor.fetchall()
 		cursor.execute("select location,loc_stat from user where uid=%s",str(uid))
 		loc=cursor.fetchall()
-		#x=lstat[0][1].rsplit(",",1)[1]
-		if loc[0][0]==location:
+		if loc[0][0]==location and int(q[0][0])==5:
 			x=loc[0][1]+",stationary"
 			print loc[0][1]
-#			cursor.execute("""update user set location=%s where uid=%s""",(loc[0],stime,uid))
-		else:
+		elif loc[0][0]!=location and int(q[0][0])==5::
 			x=loc[0][1]+",moving"
 		cursor.execute("""update user set loc_stat=%s,location=%s,update_id=%s where uid=%s""",(x,location,updateid,uid))
 		db.commit()
@@ -126,12 +127,12 @@ def takeques(i,chat_id):
 		#option=cursor.fetchall()
 		#print option
 
-		if str(ques[0][4]) is 'NULL':	#checking numeric or multiple
+		if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
 			keyboard = [
-	    ['7', '8', '9'],
-	    ['4', '5', '6'],
-	    ['1', '2', '3'],
-	    ['-', '.', '0']
+		['7', '8', '9'],
+		['4', '5', '6'],
+		['1', '2', '3'],
+		['-', '.', '0']
 	];
 			reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
 	
@@ -145,7 +146,8 @@ def takeques(i,chat_id):
 		db.commit()
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
-	elif(i<=10):
+	
+	elif(i<=10 and i!=5):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
 			cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
@@ -157,12 +159,12 @@ def takeques(i,chat_id):
 			#option=cursor.fetchall()
 			#print option
 	
-			if ques[0][4]=='NULL':	#checking numeric or multiple
+			if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
 				keyboard = [
-		    ['7', '8', '9'],
-		    ['4', '5', '6'],
-		    ['1', '2', '3'],
-		    ['-', '.', '0']
+			['7', '8', '9'],
+			['4', '5', '6'],
+			['1', '2', '3'],
+			['-', '.', '0']
 		];
 				reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
 		
@@ -177,10 +179,7 @@ def takeques(i,chat_id):
 	
 		except Exception as e:
 			print e
-			#cursor.execute("select qid from user where uid=%s",str(chat_id))
-			#q=cursor.fetchall()
-			#db.close()
-			#takeques(int(q[0][0])+1,chat_id)
+	
 	else:
 		
 		s=""
@@ -193,7 +192,7 @@ def takeques(i,chat_id):
 		cursor.execute("select score from user where uid=%s",chat_id)
 		correct=cursor.fetchall()
 		if cursor.rowcount>0:
-			bot.sendMessage(chat_id, "Your score: " +str(correct[0][0])+ " out of 10.\n You took on an average " +str(avg[0][0])+ ' seconds to do a ques.' )
+			bot.sendMessage(chat_id,"Your score: " +str(correct[0][0])+ " out of 10.\n\nYou took on an average " +str(avg[0][0])+ ' seconds to do a ques.')
 		else:
 			bot.sendMessage(chat_id,"Quiz yet to be played")
 		cursor.execute("select name,score from user order by score desc")
@@ -245,7 +244,7 @@ def checkans(i,chat_id,gans):
 	exp=cursor.fetchall()
 	bot.sendMessage(chat_id, status+".\nExplaination- "+exp[0][0])
 	db.close()
-	
+	time.sleep(100)
 	
 	
 		
@@ -255,6 +254,7 @@ def start(name,chat_id,msg,updateid):
 	if msg=='/start':
 		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
 		cursor.execute("delete from userques where uid=%s",chat_id)
+		db.commit()
 		bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n\n /startquiz \n\n /stats \n\n /syllabus")
 			
 
