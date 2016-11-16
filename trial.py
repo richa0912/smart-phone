@@ -190,11 +190,12 @@ def takeques(i,chat_id):
 		cursor.execute("select avg(qtime) from userques where uid=%s",chat_id)
 
 		avg=cursor.fetchall()
-		print avg
 		cursor.execute("select score from user where uid=%s",chat_id)
 		correct=cursor.fetchall()
-		bot.sendMessage(chat_id, "Completed. Your score: " +str(correct[0][0])+ " out of 10.\n You took on an average " +str(avg[0][0])+ ' seconds to do a ques.' )
-		
+		if cursor.rowcount>0:
+			bot.sendMessage(chat_id, "Your score: " +str(correct[0][0])+ " out of 10.\n You took on an average " +str(avg[0][0])+ ' seconds to do a ques.' )
+		else:
+			bot.sendMessage(chat_id,"Quiz yet to be played")
 		cursor.execute("select name,score from user order by score desc")
 		glo=cursor.fetchall()
 		print "\n"+str(glo)+"\n"
@@ -208,9 +209,12 @@ def takeques(i,chat_id):
 		print locat
 		cursor.execute("select name,score from user where location=%s order by score desc",str(locat[0][0]))
 		data=cursor.fetchall()
+		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				s+=str(data[k][0]+" "+data[k][1])+"\n"
+				print data[k][1]
+				if data[k][1] >0:
+					s+=str(data[k][0]+" "+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
 		cursor.execute("update user set score=default, qid=0, stime=0, etime=0,loc_stat=0 where uid=%s",chat_id)
 		cursor.execute("delete from userques where uid=%s",chat_id)
