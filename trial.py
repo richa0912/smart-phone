@@ -186,15 +186,16 @@ def takeques(i,chat_id):
 		x=[]
 		cursor.execute("update user set etime=%s where uid=%s",(time.time(),chat_id))
 		db.commit()
-		cursor.execute("select avg(qtime) from userques where chat_id=%s",chat_id)
-		avg=str(cursor.fetchall())
-		print avg
+		cursor.execute("select avg(qtime) from userques where uid=%s",chat_id)
+		avg=int(cursor.fetchall())
+		print avg[0][0]
 		cursor.execute("select score from user where uid=%s",chat_id)
-		correct=str(cursor.fetchall())
-		bot.sendMessage(chat_id, "Completed. Your score: " +correct[0][0]+ " out of 10.\n You took on an average " +avg[0][0]+ ' seconds to do a ques.' )
+		correct=int(cursor.fetchall())
+		bot.sendMessage(chat_id, "Completed. Your score: " +str(correct[0][0])+ " out of 10.\n You took on an average " +str(avg[0][0])+ ' seconds to do a ques.' )
 		
 		cursor.execute("select name,score from user order by score desc limit 3")
 		glo=cursor.fetchall()
+		print "\n"+glo+"\n"
 		if cursor.rowcount>0:
 			for k in len(data):
 				s=glo[k][0]+" "+glo[k][1]+"\n"
@@ -204,9 +205,9 @@ def takeques(i,chat_id):
 		locat=str(cursor.fetchall())
 		cursor.execute("select name,score from user order by score where location=%s",locat)
 		data=str(cursor.fetchall())
-		#print data
+		print data
 		if cursor.rowcount>0:
-			for k in len(data):
+			for k in len(data[0]):
 				s=data[k][0]+" "+data[k][1]+"\n"
 				l.append(s)
 			bot.sendMessage(chat_id, 'Local Rank of people near you: '+s)
@@ -247,7 +248,7 @@ def checkans(i,chat_id,gans):
 		
 def start(name,chat_id,msg,updateid):
 		if msg=='/start':
-			bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n /startquiz \n /stats \n /syllabus")
+			bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n\n /startquiz \n\n /stats \n\n /syllabus")
 			
 		
 		if msg=='/startquiz':
@@ -261,7 +262,7 @@ def start(name,chat_id,msg,updateid):
 			q=cursor.fetchall()
 			checkans(q,chat_id,msg)
 			takeques(int(q[0][0])+1,chat_id)
-		if msg=='/stat':
+		if msg=='/stats':
 			takequiz(11,chat_id)
 
 if __name__ == "__main__":
