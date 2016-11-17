@@ -49,15 +49,16 @@ def token():
 			db.close()
 		
 			if (t-int(tcheck))>30:
-				bot.sendMessgae(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
+				bot.sendMessage(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
 			time.sleep(2)
 			checkans(i,chat_id,gans)
 			#print data
 			#i=i+1
-			if i==5:
+			if i[0][0]=='5':
 				reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
 				bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
-			takeques(int(i[0][0])+1,chat_id)
+			else:
+				takeques(int(i[0][0])+1,chat_id)
 		
 		elif 'location' in content['message']:  #.index(['location']) is not None:
 			longi = content['message']['location']['longitude']
@@ -164,14 +165,12 @@ def takeques(i,chat_id):
 			bot.sendMessage(chat_id, 'Global Ranking. Top players \n'+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locate=str(cursor.fetchall())
-		locat=locate[0][0].split(",")[3]
-		cursor.execute("select name,score from user where location=%s order by score desc",str(locat))
+		locat=str(locate[0][0])
+		cursor.execute("select name,score from user where location=%s order by score desc",locat)
 		data=cursor.fetchall()
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				#print data[k][1]
-				#if data[k][1] >0:
 				s+=str(data[k][0]+"-"+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
 		db.commit()
