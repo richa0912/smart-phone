@@ -173,6 +173,8 @@ def takeques(i,chat_id):
 			for k in range(0,len(data)):
 				s+=str(data[k][0]+"-"+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
+		else:
+			bot.sendMessage(chat_id, 'No one playing right now in your area')
 		db.commit()
 
 	
