@@ -51,7 +51,7 @@ def token():
 		
 			if (t-int(tcheck))>120:
 				bot.sendMessgae(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
-			time.sleep(1000)
+			time.sleep(2)
 			checkans(i,chat_id,gans)
 			#print data
 			#i=i+1
@@ -94,20 +94,21 @@ def token():
 	return jsonify(content)
 
 def adduser(uid,stime,uname,location,updateid):
+	x=0
 	db=mysql.connect()
 	cursor=db.cursor()
 	try:
 		cursor.execute("""INSERT INTO user (uid,qid,name,stime,etime,location,loc_stat,score,update_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)""",(uid,0,uname,stime,0,"null","null",0,updateid))
 		db.commit()
 	except Exception as e:
-		cursor.execute("select qid from user where uid=%s",str(chat_id))
+		cursor.execute("select qid from user where uid=%s",uid)
 		q=cursor.fetchall()
 		cursor.execute("select location,loc_stat from user where uid=%s",str(uid))
 		loc=cursor.fetchall()
 		if loc[0][0]==location and int(q[0][0])==5:
 			x=loc[0][1]+",stationary"
 			print loc[0][1]
-		elif loc[0][0]!=location and int(q[0][0])==5::
+		elif loc[0][0]!=location and int(q[0][0])==5:
 			x=loc[0][1]+",moving"
 		cursor.execute("""update user set loc_stat=%s,location=%s,update_id=%s where uid=%s""",(x,location,updateid,uid))
 		db.commit()
@@ -117,23 +118,23 @@ def adduser(uid,stime,uname,location,updateid):
 def takeques(i,chat_id):
 	db=mysql.connect()
 	cursor=db.cursor()
-	if i==5:
+	if i==6:
 		cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
 		db.commit()
 		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
-		ques=cursor.fetchall()
+		ques=str(cursor.fetchall())
 		print ques
 		#cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
 		#option=cursor.fetchall()
 		#print option
 
-		if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
+		if str(ques[0][1])!='A' and str(ques[0][1])!='B' and str(ques[0][1])!='C' and str(ques[0][1])!='D':
 			keyboard = [
-		['7', '8', '9'],
-		['4', '5', '6'],
-		['1', '2', '3'],
-		['-', '.', '0']
-	];
+    ['7', '8', '9'],
+    ['4', '5', '6'],
+    ['1', '2', '3'],
+    ['-', '.', '0']
+];
 			reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
 	
 		else:
@@ -147,7 +148,7 @@ def takeques(i,chat_id):
 		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
 		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
 	
-	elif(i<=10 and i!=5):
+	elif(i<=10 and i!=6):
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
 			cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
@@ -204,16 +205,16 @@ def takeques(i,chat_id):
 				x+=str(glo[k][0]+" - "+glo[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Global Ranking. Top players \n'+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
-		locat=str(cursor.fetchall())
-		print locat
-		cursor.execute("select name,score from user where location=%s order by score desc",str(locat[0][0]))
+		locate=str(cursor.fetchall())
+		locat=locate[0][0].split(",")[3]
+		cursor.execute("select name,score from user where location=%s order by score desc",str(locat))
 		data=cursor.fetchall()
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
 				#print data[k][1]
 				#if data[k][1] >0:
-				s+=str(data[k][0]+" "+data[k][1])+"\n"
+				s+=str(data[k][0]+"-"+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
 		db.commit()
 
@@ -244,7 +245,7 @@ def checkans(i,chat_id,gans):
 	exp=cursor.fetchall()
 	bot.sendMessage(chat_id, status+".\nExplaination- "+exp[0][0])
 	db.close()
-	time.sleep(100)
+	time.sleep(1)
 	
 	
 		
