@@ -124,16 +124,14 @@ def takeques(i,chat_id):
 		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
 		ques=str(cursor.fetchall())
 		print ques
-		cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
-		option=cursor.fetchall()
-		print option
-		if option[0][0]=='null' :
-			keyboard = [
+
+		if str(ques[0][1])!='A' and str(ques[0][1])!='B' and str(ques[0][1])!='C' and str(ques[0][1])!='D':
+			keyboard = dict([
     ['7', '8', '9'],
     ['4', '5', '6'],
     ['1', '2', '3'],
     ['-', '.', '0']
-];
+]);
 			reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
 	
 		else:
