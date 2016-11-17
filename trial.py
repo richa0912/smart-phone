@@ -118,34 +118,7 @@ def adduser(uid,stime,uname,location,updateid):
 def takeques(i,chat_id):
 	db=mysql.connect()
 	cursor=db.cursor()
-	if i==6:
-		cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
-		db.commit()
-		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
-		ques=str(cursor.fetchall())
-		print ques
-
-		if str(ques[0][1])!='A' and str(ques[0][1])!='B' and str(ques[0][1])!='C' and str(ques[0][1])!='D':
-			keyboard = dict([
-    ['7', '8', '9'],
-    ['4', '5', '6'],
-    ['1', '2', '3'],
-    ['-', '.', '0']
-]);
-			reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
-	
-		else:
-			keyboard = [[InlineKeyboardButton(ques[0][2], callback_data='A')],[InlineKeyboardButton(ques[0][3], callback_data='B')],[InlineKeyboardButton(ques[0][4], callback_data='C')],[InlineKeyboardButton(ques[0][5], callback_data='D')] ]
-			reply_markup = InlineKeyboardMarkup(keyboard)
-
-		bot.sendMessage(chat_id, text="Ques."+str(i)+" "+ques[0][0], reply_markup=reply_markup)
-
-		cursor.execute("update userques set qtime=%s,canswer=%s where qid=%s and uid=%s",(time.time(),ques[0][1],i,chat_id))
-		db.commit()
-		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
-		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
-	
-	elif(i<=10 and i!=6):
+	if i<=10:
 		try:
 			cursor.execute("INSERT INTO userques (uid,qid,canswer,ganswer,status,qtime) VALUES (%s,%s,%s,%s,%s,%s)",(chat_id,i,0,0,0,0))
 			cursor.execute("update user set qid=%s where uid=%s",(i,chat_id))
@@ -153,30 +126,16 @@ def takeques(i,chat_id):
 			cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
 			ques=cursor.fetchall()
 			print ques
-			#cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
-			#option=cursor.fetchall()
-			#print option
-	
-			if ques[0][1]!='A' and ques[0][1]!='B' and ques[0][1]!='C' and ques[0][1]!='D':	#checking numeric or multiple
-				keyboard = [
-			['7', '8', '9'],
-			['4', '5', '6'],
-			['1', '2', '3'],
-			['-', '.', '0']
-		];
-				reply_markup = ReplyKeyboardMarkup(keyboard,resize_keyboard = True,one_time_keyboard = True)
-		
-			else:
-				keyboard = [[InlineKeyboardButton(ques[0][2], callback_data='A')],[InlineKeyboardButton(ques[0][3], callback_data='B')],[InlineKeyboardButton(ques[0][4], callback_data='C')],[InlineKeyboardButton(ques[0][5], callback_data='D')] ]
-				reply_markup = InlineKeyboardMarkup(keyboard)
-	
-			bot.sendMessage(chat_id, text="Ques."+str(i)+" "+ques[0][0], reply_markup=reply_markup)
-	
+			keyboard = [[InlineKeyboardButton(ques[0][2], callback_data='A')],[InlineKeyboardButton(ques[0][3], callback_data='B')],[InlineKeyboardButton(ques[0][4], callback_data='C')],[InlineKeyboardButton(ques[0][5], callback_data='D')] ]
+			reply_markup = InlineKeyboardMarkup(keyboard)
 			cursor.execute("update userques set qtime=%s,canswer=%s where qid=%s and uid=%s",(time.time(),ques[0][1],i,chat_id))
 			db.commit()
+			bot.sendMessage(chat_id, text="Ques."+str(i)+" "+ques[0][0], reply_markup=reply_markup)
+	
+			
 	
 		except Exception as e:
-			print e
+			bot.sendMessage(chat_id, text="Question already done")
 	
 	else:
 		
@@ -217,6 +176,7 @@ def takeques(i,chat_id):
 
 	
 def checkans(i,chat_id,gans):
+	
 	db=mysql.connect()
 	cursor=db.cursor()
 	print chat_id
@@ -242,6 +202,10 @@ def checkans(i,chat_id,gans):
 	exp=cursor.fetchall()
 	bot.sendMessage(chat_id, status+".\nExplaination- "+exp[0][0])
 	db.close()
+	if i==5:
+		reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Please share your location' , request_location=True)]] ,one_time_keyboard=True,resize_keyboard=True)
+		bot.sendMessage(chat_id,'Hey sorry for interrupting! Would you mind sharing your location just to compare you with other people near your area', reply_markup=reply_markup)
+	
 	time.sleep(1)
 	
 	
