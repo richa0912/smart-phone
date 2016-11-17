@@ -49,7 +49,7 @@ def token():
 			db.commit()
 			db.close()
 		
-			if (t-int(tcheck))>120:
+			if (t-int(tcheck))>30:
 				bot.sendMessgae(chat_id, "It seems your internet is not working properly. Don't worry your current status is saved :)")
 			time.sleep(2)
 			checkans(i,chat_id,gans)
@@ -124,11 +124,10 @@ def takeques(i,chat_id):
 		cursor.execute("select question,answer,opta,optb,optc,optd from quesbank where qid=%s",i)
 		ques=str(cursor.fetchall())
 		print ques
-		#cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
-		#option=cursor.fetchall()
-		#print option
-
-		if str(ques[0][1])!='A' and str(ques[0][1])!='B' and str(ques[0][1])!='C' and str(ques[0][1])!='D':
+		cursor.execute("select opta,optb,optc,optd from quesbank where qid=%s",i)
+		option=cursor.fetchall()
+		print option
+		if option[0][0]=='null' :
 			keyboard = [
     ['7', '8', '9'],
     ['4', '5', '6'],
