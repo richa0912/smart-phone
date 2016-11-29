@@ -166,12 +166,13 @@ def takeques(i,chat_id):
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locate=str(cursor.fetchall())
 		locat=str(locate[0][0])
-		cursor.execute("select name,score from user where location=%s order by score desc",locat)
+		cursor.execute("select name,score,location from user order by score desc",locat)
 		data=cursor.fetchall()
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				s+=str(data[k][0]+"-"+data[k][1])+"\n"
+				if "kharagpur" in str(data[k][2]):
+					s+=str(data[k][0]+"-"+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
 		else:
 			bot.sendMessage(chat_id, 'No one playing right now in your area')
