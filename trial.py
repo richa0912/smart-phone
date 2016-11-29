@@ -17,6 +17,7 @@ bot=telegram.Bot(token)
 @app.route('/289036724:AAHY09oWw0Ohn8-uu7-5Ah0tiY8yWfhPLgQ/webhook',methods=['get','post'])
 def token():
 	content=request.json
+	kgp="Kharagpur"
 	db=mysql.connect()
 	cursor=db.cursor()
 	print content
@@ -162,7 +163,7 @@ def takeques(i,chat_id):
 		if cursor.rowcount>0:
 			for k in range(0,len(glo)):
 				x+=str(glo[k][0]+" - "+glo[k][1])+"\n"
-			bot.sendMessage(chat_id, 'Global Ranking. Top players \n'+x)
+			bot.sendMessage(chat_id, 'Global Ranking. Top players :\n\n'+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locate=str(cursor.fetchall())
 		locat=str(locate[0][0])
@@ -171,9 +172,9 @@ def takeques(i,chat_id):
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				if "kharagpur" in str(data[k][2]):
+				if kgp in str(data[k][2]):
 					s+=str(data[k][0]+"-"+data[k][1])+"\n"
-			bot.sendMessage(chat_id, 'Local Rank of people near you:\n '+s)
+			bot.sendMessage(chat_id, 'Local Rank of people near your area '+locat.split(",")[1]+':\n\n '+s)
 		else:
 			bot.sendMessage(chat_id, 'No one playing right now in your area')
 		db.commit()
