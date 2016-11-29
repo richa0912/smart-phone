@@ -166,14 +166,17 @@ def takeques(i,chat_id):
 			bot.sendMessage(chat_id, 'Global Ranking. Top players :\n\n'+x)
 		cursor.execute("select location from user where uid=%s",chat_id)
 		locate=str(cursor.fetchall())
-		locat=str(locate[0][0])
-		s=locat.rsplit(',',3)[1]
+		print locate
+		#locat=str(locate[0][0])
+		#print locat
+		kgp=str(locate.rsplit(',',5)[1])
+		print s
 		cursor.execute("select name,score,location from user order by score desc")
 		data=cursor.fetchall()
 		print data
 		if cursor.rowcount>0:
 			for k in range(0,len(data)):
-				if s in str(data[k][2]):
+				if kgp in str(data[k][2]):
 					s+=str(data[k][0]+"-"+data[k][1])+"\n"
 			bot.sendMessage(chat_id, 'Local Rank of people near your area :\n\n'+s)
 		else:
