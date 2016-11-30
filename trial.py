@@ -66,7 +66,7 @@ def token():
 			lati = content['message']['location']['latitude']
 			fname=content['message']['chat']['first_name']
 #			lname=content['message']['chat']['last_name']
-			name=fname+" :) "
+			name=fname
 			geolocator = GoogleV3()
 
 			location = geolocator.reverse((lati,longi))
@@ -90,7 +90,7 @@ def token():
 		elif 'text' in content['message']:
 			fname=content['message']['chat']['first_name']
 #			lname=content['message']['chat']['last_name']
-			name=fname+" :) "
+			name=fname
 			msg = content['message']['text']
 			start(name,chat_id,msg,updateid)
 			db.close()
