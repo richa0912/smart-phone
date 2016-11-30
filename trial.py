@@ -154,7 +154,7 @@ def takeques(i,chat_id):
 		correct=cursor.fetchall()
 		if cursor.rowcount>0:
 			bot.sendMessage(chat_id,"Your score: " +str(correct[0][0])+ " out of 10.\n\nYou took on an average " +str(avg[0][0])+ ' seconds to do a ques.')
-			bot.sendMessage(chat_id,"Quiz yet to be played")
+			#bot.sendMessage(chat_id,"Quiz yet to be played")
 			cursor.execute("select name,score from user order by score desc")
 			glo=cursor.fetchall()
 			print "\n"+str(glo)+"\n"
@@ -163,12 +163,12 @@ def takeques(i,chat_id):
 				for k in range(0,len(glo)):
 					x+=str(glo[k][0]+" - "+glo[k][1])+"\n"
 				bot.sendMessage(chat_id, 'Global Ranking. Top players :\n\n'+x)
-			cursor.execute("select location from user where uid=%s",chat_id)
-			locate=str(cursor.fetchall())
-			print locate
-			#locat=str(locate[0][0])
-			#print locat
-			if locate!="()":
+			try:				
+				cursor.execute("select location from user where uid=%s",chat_id)
+				locate=str(cursor.fetchall())
+				print locate
+				#locat=str(locate[0][0])
+				#print locat
 				kgp=str(locate.rsplit(',',5)[1])
 				print kgp
 				cursor.execute("select name,score,location from user order by score desc")
@@ -181,6 +181,10 @@ def takeques(i,chat_id):
 					bot.sendMessage(chat_id, 'Local Rank of people near your area :\n\n'+s)
 				else:
 					bot.sendMessage(chat_id, 'No one playing right now in your area')
+			except Exception as e:
+				print e
+				bot.sendMessage(chat_id, 'Cant show your local ranking without getting your location.')
+				bot.sendMessage(chat_id, 'Start quiz to see where you stand in this competition.!!')
 		else:
 			bot.sendMessage(chat_id,"Quiz yet to be played")
 			cursor.execute("select name,score from user order by score desc")
@@ -191,23 +195,6 @@ def takeques(i,chat_id):
 				for k in range(0,len(glo)):
 					x+=str(glo[k][0]+" - "+glo[k][1])+"\n"
 				bot.sendMessage(chat_id, 'Global Ranking. Top players :\n\n'+x)
-		cursor.execute("select location from user where uid=%s",chat_id)
-		locate=str(cursor.fetchall())
-		print locate
-		#locat=str(locate[0][0])
-		#print locat
-		kgp=str(locate.rsplit(',',5)[1])
-		print s
-		cursor.execute("select name,score,location from user order by score desc")
-		data=cursor.fetchall()
-		print data
-		if cursor.rowcount>0:
-			for k in range(0,len(data)):
-				if kgp in str(data[k][2]):
-					s+=str(data[k][0]+"-"+data[k][1])+"\n"
-			bot.sendMessage(chat_id, 'Local Rank of people near your area :\n\n'+s)
-		else:
-			bot.sendMessage(chat_id, 'No one playing right now in your area')
 		db.commit()
 
 	
