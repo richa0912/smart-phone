@@ -212,8 +212,7 @@ def checkans(i,chat_id,gans):
 	bot.sendMessage(chat_id, status+".\nExplaination- "+exp[0][0])
 	db.close()
 	time.sleep(1)
-	
-	
+		
 		
 def start(name,chat_id,msg,updateid):
 	db=mysql.connect()
@@ -223,7 +222,8 @@ def start(name,chat_id,msg,updateid):
 		cursor.execute("delete from userques where uid=%s",chat_id)
 		db.commit()
 		bot.sendMessage(chat_id,"Welcome "+name+"!! :) \nThis bot helps you prepare for your GATE exam. You can even compete with your friends. Lets begin.\n\n /startquiz \n\n /stats \n\n /syllabus")
-			
+	#	reply_markup = ReplyKeyboardMarkup([[telegram.KeyboardButton('Do you want to share Location', request_location=True)]],one_time_keyboard=True,resize_keyboard=True)
+	#	bot.sendMessage(chat_id, 'Hey '+name, reply_markup=reply_markup)	
 
 	if msg=='/startquiz':
 		stime=time.time()
